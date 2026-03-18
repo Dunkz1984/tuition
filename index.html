@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DuncanTuition — Beyond the Ordinary</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,300;0,400;0,600;0,700;0,900;1,300&family=Barlow+Condensed:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --black:   #020408;
+      --void:    #050a10;
+      --panel:   #0a1220;
+      --edge:    #0f1e30;
+      --blue:    #00a8ff;
+      --blue-dim:#0070bb;
+      --white:   #f0f4f8;
+      --mid:     #4a6070;
+      --dim:     #1e2e3e;
+      --serif:   'Barlow Condensed', sans-serif;
+      --body:    'Barlow', sans-serif;
+      --radius:  4px;
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+  body {
+    cursor: default !important;  /* removes your crosshair cursor too */
+  }
+  #cursorDot,
+  #cursorRing {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {  /* Typical mobile/tablet breakpoint */
+  .about-photo {
+    max-width: 280px;        /* Smaller on small screens */
+  }
+}
+
+.headshot-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+    body {
+      font-family: var(--body);
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    .cursor-dot {
+      width: 6px; height: 6px; background: var(--blue);
+      border-radius: 50%; position: fixed; pointer-events: none;
+      z-index: 9999; box-shadow: 0 0 10px var(--blue);
+      transform: translate(-50%,-50%);
+    }
+    .cursor-ring {
+      width: 32px; height: 32px; border: 1px solid rgba(0,168,255,0.4);
+      border-radius: 50%; position: fixed; pointer-events: none;
+      z-index: 9998; transition: width 0.2s, height 0.2s, border-color 0.2s;
+      transform: translate(-50%,-50%);
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--void); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); }
+
+    #starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.7; }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+    .tag {
+      display: inline-block;
+      font-family: var(--serif); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--blue);
+      border: 1px solid var(--blue-dim); padding: 5px 12px; border-radius: 2px;
+      background: rgba(0,168,255,0.05); margin-bottom: 20px;
+    }
+    h2.section-heading {
+      font-family: var(--serif);
+      font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 900;
+      text-transform: uppercase; letter-spacing: -0.01em; line-height: 1;
+    }
+    h2.section-heading em { font-style: italic; color: var(--blue); font-weight: 300; }
+    .rule { display: flex; align-items: center; gap: 16px; margin: 24px 0 36px; }
+    .rule::before { content: ''; width: 48px; height: 1px; background: linear-gradient(90deg,var(--blue),transparent); }
+    .rule-text { font-size: 11px; letter-spacing: 0.2em; color: var(--mid); text-transform: uppercase; }
+    a { color: inherit; text-decoration: none; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      background: rgba(2,4,8,0.88); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,168,255,0.08);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .nav-logo { font-family: var(--serif); font-size: 1.4rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-logo span { color: var(--blue); }
+    .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+    .nav-links a { font-family: var(--serif); font-size: 0.8rem; font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); transition: color 0.2s; display: inline-block; padding:8px 4px;}
+    .nav-links a:hover { color: var(--blue); }
+    .nav-cta-btn { border: 1px solid var(--blue) !important; color: var(--blue) !important; padding: 9px 20px; border-radius: 2px; transition: background 0.2s, color 0.2s !important; }
+    .nav-cta-btn:hover { background: var(--blue) !important; color: var(--black) !important; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--white); }
+
+    /* HERO */
+    #hero { position: relative; z-index: 2; min-height: 100vh; display: flex; align-items: center; overflow: hidden; }
+    .hero-grid-lines {
+      position: absolute; inset: 0; z-index: 0;
+      background-image: linear-gradient(rgba(0,168,255,0.035) 1px,transparent 1px),linear-gradient(90deg,rgba(0,168,255,0.035) 1px,transparent 1px);
+      background-size: 80px 80px;
+    }
+    .hero-glow {
+      position: absolute; width: 700px; height: 700px; top: -100px; right: -100px; pointer-events: none;
+      background: radial-gradient(circle,rgba(0,168,255,0.09) 0%,transparent 65%);
+      animation: glowPulse 6s ease-in-out infinite;
+    }
+    @keyframes glowPulse { 0%,100%{opacity:.6;transform:scale(1)} 50%{opacity:1;transform:scale(1.08)} }
+    .hero-content { position: relative; z-index: 3; padding: 160px 0 120px; max-width: 820px; }
+    .hero-label { display: flex; align-items: center; gap: 12px; margin-bottom: 28px; animation: fadeSlide .7s ease both; }
+    .hero-label-line { width: 32px; height: 1px; background: var(--blue); }
+    .hero-label-text { font-family: var(--serif); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--blue); }
+    .hero-h1 {
+      font-family: var(--serif); font-size: clamp(3.5rem,9vw,7.5rem); font-weight: 900;
+      text-transform: uppercase; letter-spacing: -0.02em; line-height: 0.95; margin-bottom: 32px;
+      animation: fadeSlide .7s ease .1s both;
+    }
+    .hero-h1 .line-2 { display: block; font-weight: 100; font-style: italic; letter-spacing: .01em; color: rgba(240,244,248,.3); }
+    .hero-h1 .line-3 { display: block; color: var(--blue); font-weight: 900; }
+    .hero-sub { font-size: 1rem; font-weight: 300; color: var(--mid); max-width: 500px; line-height: 1.75; margin-bottom: 44px; animation: fadeSlide .7s ease .2s both; }
+    .hero-actions { display: flex; align-items: center; gap: 16px; animation: fadeSlide .7s ease .3s both; }
+    .btn-primary {
+      font-family: var(--serif); font-size: .8rem; letter-spacing: .18em; text-transform: uppercase;
+      background: var(--blue); color: var(--black); padding: 15px 36px; border: none; border-radius: 2px;
+      cursor: pointer; font-weight: 700; transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 0 30px rgba(0,168,255,.35); display: inline-block;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,168,255,.6); }
+    .btn-ghost {
+      font-family: var(--serif); font-size: .8rem; letter-spacing: .18em; text-transform: uppercase;
+      background: transparent; color: var(--white); padding: 14px 28px;
+      border: 1px solid var(--dim); border-radius: 2px; cursor: pointer;
+      transition: border-color .2s, color .2s; display: inline-block;
+    }
+    .btn-ghost:hover { border-color: var(--blue); color: var(--blue); }
+    .hero-ticker { display: flex; gap: 48px; margin-top: 72px; padding-top: 40px; border-top: 1px solid rgba(255,255,255,.05); animation: fadeSlide .7s ease .4s both; }
+    .ticker-num { font-family: var(--serif); font-size: 2.4rem; font-weight: 900; line-height: 1; }
+    .ticker-num span { color: var(--blue); }
+    .ticker-label { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--mid); margin-top: 6px; }
+    .hero-scroll {
+      position: absolute; bottom: 36px; left: 50%; transform: translateX(-50%); z-index: 3;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--dim);
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+    .hero-scroll::before { content: ''; display: block; width: 1px; height: 32px; background: linear-gradient(var(--blue),transparent); }
+    @keyframes scrollBounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+    @keyframes fadeSlide { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+    /* MISSION BAR */
+    #mission { position: relative; z-index: 2; background: var(--blue); padding: 18px 0; overflow: hidden; }
+    .mission-track { display: flex; gap: 64px; align-items: center; animation: marquee 22s linear infinite; width: max-content; }
+    .mission-item { font-family: var(--serif); font-size: .78rem; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--black); white-space: nowrap; display: flex; align-items: center; gap: 24px; }
+    .mission-item::after { content: '✦'; font-size: 8px; opacity: .5; }
+    @keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ABOUT */
+    #about { position: relative; z-index: 2; padding: 120px 0; background: var(--void); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .about-photo {
+      width: 100%; aspect-ratio: 3/4; background: var(--panel);
+      border: 1px solid var(--dim); border-radius: var(--radius);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; min-height: 420px; height: 100%;
+    }
+    .about-photo::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg,rgba(0,168,255,.06) 0%,transparent 60%); }
+    .photo-corner { position: absolute; width: 20px; height: 20px; border-color: var(--blue); border-style: solid; border-width: 0; }
+    .photo-corner.tl { top: 12px; left: 12px; border-top-width: 1px; border-left-width: 1px; }
+    .photo-corner.tr { top: 12px; right: 12px; border-top-width: 1px; border-right-width: 1px; }
+    .photo-corner.bl { bottom: 12px; left: 12px; border-bottom-width: 1px; border-left-width: 1px; }
+    .photo-corner.br { bottom: 12px; right: 12px; border-bottom-width: 1px; border-right-width: 1px; }
+    .photo-icon { font-size: 3rem; opacity: .12; margin-bottom: 10px; }
+.photo-placeholder {
+  position: absolute;
+  inset: 0;
+  font-size: .75rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+    .about-data-pill { position: absolute; bottom: -20px; right: -20px; background: var(--panel); border: 1px solid var(--blue-dim); border-radius: var(--radius); padding: 16px 20px; box-shadow: 0 0 30px rgba(0,168,255,.12); }
+    .data-val { font-family: var(--serif); font-size: 2rem; font-weight: 900; color: var(--blue); line-height: 1; }
+    .data-lbl { font-size: 10px; letter-spacing: .14em; color: var(--mid); margin-top: 3px; text-transform: uppercase; }
+    .about-visual { position: relative; }
+    .about-copy p { font-size: 1rem; font-weight: 300; color: rgba(240,244,248,.6); line-height: 1.85; margin-bottom: 20px; }
+    .creds { display: flex; flex-direction: column; gap: 10px; margin-top: 32px; }
+    .cred-item { display: flex; align-items: flex-start; gap: 14px; font-size: .875rem; color: var(--white); }
+    .cred-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); margin-top: 6px; flex-shrink: 0; box-shadow: 0 0 8px var(--blue); }
+
+    /* SUBJECTS */
+    #subjects { position: relative; z-index: 2; padding: 120px 0; background: var(--black); }
+    .subjects-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .subject-block {
+      background: var(--panel); border: 1px solid var(--dim); border-radius: var(--radius);
+      padding: 48px 40px; position: relative; overflow: hidden;
+      transition: border-color .3s, transform .3s;
+    }
+    .subject-block:hover { border-color: var(--blue); transform: translateY(-4px); }
+    .subject-block::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,var(--blue),transparent); transform: scaleX(0); transform-origin: left; transition: transform .4s; }
+    .subject-block:hover::before { transform: scaleX(1); }
+    .subject-bg-glow { position: absolute; top: -40px; right: -40px; width: 200px; height: 200px; background: radial-gradient(circle,rgba(0,168,255,.07) 0%,transparent 70%); pointer-events: none; }
+    .subject-symbol { font-family: var(--serif); font-size: 5rem; font-weight: 900; color: rgba(0,168,255,.05); position: absolute; bottom: 20px; right: 28px; line-height: 1; pointer-events: none; user-select: none; }
+    .subject-num { font-family: var(--serif); font-size: .75rem; letter-spacing: .2em; color: var(--blue); margin-bottom: 20px; text-transform: uppercase; }
+    .subject-name { font-family: var(--serif); font-size: 2.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: -.01em; line-height: 1; margin-bottom: 16px; }
+    .subject-levels-row { display: flex; gap: 8px; margin-bottom: 24px; }
+    .level-badge { font-family: var(--serif); font-size: 9px; letter-spacing: .18em; text-transform: uppercase; border: 1px solid var(--blue-dim); color: var(--blue); padding: 4px 10px; border-radius: 2px; background: rgba(0,168,255,.05); }
+    .subject-topics { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .subject-topics li { font-size: .875rem; font-weight: 300; color: rgba(240,244,248,.5); display: flex; align-items: center; gap: 10px; }
+    .subject-topics li::before { content: '—'; color: var(--blue-dim); font-size: .7rem; }
+
+    /* PRICING */
+    #pricing { position: relative; z-index: 2; padding: 120px 0; background: var(--void); }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: var(--dim); border: 1px solid var(--dim); border-radius: var(--radius); overflow: hidden; margin-top: 56px; }
+    .price-panel { background: var(--panel); padding: 44px 36px; position: relative; transition: background .3s; }
+    .price-panel:hover { background: var(--edge); }
+    .price-panel.featured { background: var(--edge); padding-top: 56px; }
+    .price-panel.featured::before { content: 'RECOMMENDED'; position: absolute; top: 0; left: 0; right: 0; background: var(--blue); color: var(--black); font-family: var(--serif); font-size: 9px; font-weight: 700; letter-spacing: .22em; text-align: center; padding: 6px; text-transform: uppercase; }
+    .price-tier { font-family: var(--serif); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--blue); margin-bottom: 14px; }
+    .price-name { font-family: var(--serif); font-size: 1.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 24px; }
+    .price-amount { font-family: var(--serif); font-size: 3.2rem; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+    .price-amount sup { font-size: 1.4rem; vertical-align: super; color: var(--blue); }
+    .price-per { font-size: 11px; letter-spacing: .12em; color: var(--mid); text-transform: uppercase; margin-bottom: 28px; }
+    .price-divider { border: none; border-top: 1px solid var(--dim); margin: 24px 0; }
+    .price-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
+    .price-features li { font-size: .85rem; font-weight: 300; color: rgba(240,244,248,.6); display: flex; align-items: flex-start; gap: 10px; }
+    .price-features li::before { content: '✓'; color: var(--blue); flex-shrink: 0; }
+    .btn-price { width: 100%; font-family: var(--serif); font-size: .78rem; letter-spacing: .18em; text-transform: uppercase; padding: 13px; border-radius: 2px; border: 1px solid var(--dim); background: transparent; color: var(--white); cursor: pointer; transition: all .2s; }
+    .btn-price:hover { border-color: var(--blue); color: var(--blue); }
+    .price-panel.featured .btn-price { background: var(--blue); border-color: var(--blue); color: var(--black); box-shadow: 0 0 24px rgba(0,168,255,.3); }
+    .price-panel.featured .btn-price:hover { box-shadow: 0 0 40px rgba(0,168,255,.5); }
+    .pricing-footnote { text-align: center; margin-top: 24px; font-size: 11px; letter-spacing: .1em; color: var(--mid); }
+
+    /* CONTACT */
+    #contact { position: relative; z-index: 2; padding: 120px 0; background: var(--black); }
+    .contact-grid { display: grid; grid-template-columns: 5fr 7fr; gap: 80px; align-items: start; }
+    .contact-left p { font-size: .95rem; font-weight: 300; color: rgba(240,244,248,.45); line-height: 1.85; margin: 28px 0 36px; }
+    .contact-meta { display: flex; flex-direction: column; gap: 14px; }
+    .contact-row { display: flex; align-items: center; gap: 14px; font-size: .85rem; color: rgba(240,244,248,.6); }
+    .contact-row-icon { width: 32px; height: 32px; border: 1px solid var(--dim); border-radius: 2px; display: flex; align-items: center; justify-content: center; font-size: .85rem; flex-shrink: 0; background: var(--panel); }
+    .form-panel { background: var(--panel); border: 1px solid var(--dim); border-radius: var(--radius); padding: 44px; }
+    .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-field { display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px; }
+    .form-field label { font-family: var(--serif); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--mid); }
+    .form-field input, .form-field select, .form-field textarea { background: var(--void); border: 1px solid var(--dim); border-radius: 2px; padding: 12px 14px; font-family: var(--body); font-size: .875rem; font-weight: 300; color: var(--white); outline: none; transition: border-color .2s, box-shadow .2s; }
+    .form-field input:focus, .form-field select:focus, .form-field textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,168,255,.08); }
+    .form-field select option { background: var(--panel); }
+    .form-field textarea { resize: vertical; min-height: 110px; }
+    .form-submit-btn { width: 100%; font-family: var(--serif); font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; background: var(--blue); color: var(--black); font-weight: 700; padding: 16px; border: none; border-radius: 2px; cursor: pointer; margin-top: 4px; transition: box-shadow .2s, transform .2s; box-shadow: 0 0 28px rgba(0,168,255,.3); }
+    .form-submit-btn:hover { box-shadow: 0 0 50px rgba(0,168,255,.55); transform: translateY(-1px); }
+    .form-secure { font-size: 10px; letter-spacing: .1em; color: var(--mid); text-align: center; margin-top: 14px; text-transform: uppercase; }
+
+    /* FOOTER */
+    footer { position: relative; z-index: 2; background: var(--void); border-top: 1px solid rgba(0,168,255,.07); padding: 48px 0 32px; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; }
+    .footer-logo { font-family: var(--serif); font-size: 1.2rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+    .footer-logo span { color: var(--blue); }
+    .footer-links { display: flex; gap: 28px; list-style: none; }
+    .footer-links a { font-family: var(--serif); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--mid); transition: color .2s; }
+    .footer-links a:hover { color: var(--blue); }
+    .footer-copy { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+
+    @media (max-width: 768px) {
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: rgba(2,4,8,.97); padding: 24px 40px; gap: 20px; border-bottom: 1px solid var(--dim); }
+      .nav-links.open { display: flex; }
+      .nav-hamburger { display: flex; }
+      .about-grid, .subjects-layout, .pricing-grid, .contact-grid { grid-template-columns: 1fr; }
+      .hero-ticker { gap: 24px; flex-wrap: wrap; }
+      .about-data-pill { right: 0; bottom: -16px; }
+      .form-row-2 { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <canvas id="starfield"></canvas>
+
+  <!-- NAV -->
+  <nav>
+    <div class="container">
+      <div class="nav-inner">
+        <a href="#hero" class="nav-logo">Duncan<span>Tuition</span></a>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#about">About</a></li>
+          <li><a href="#subjects">Subjects</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#contact" class="nav-cta-btn">Book a Session</a></li>
+        </ul>
+        <div class="nav-hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-grid-lines"></div>
+    <div class="hero-glow"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-label">
+          <div class="hero-label-line"></div>
+          <span class="hero-label-text">GCSE &amp; A-Level English Tuitiion</span>
+        </div>
+        <h1 class="hero-h1">
+          Reach<br/>
+          <span class="line-2">the impossible</span>
+          <span class="line-3">Grade.</span>
+        </h1>
+        <p class="hero-sub">Precision-engineered tuition for students who refuse to settle. One-to-one sessions built around your learning — methodical, supportive, results-driven.</p>
+        <div class="hero-actions">
+          <a href="#contact" class="btn-primary">Launch Your Journey</a>
+          <a href="#subjects" class="btn-ghost">Explore Subjects</a>
+        </div>
+        <div class="hero-ticker">
+          <div class="ticker-item"><div class="ticker-num">5<span>+</span></div><div class="ticker-label">Years Experience</div></div>
+          <div class="ticker-item"><div class="ticker-num">1000<span>+</span></div><div class="ticker-label">Students Taught</div></div>
+          <div class="ticker-item"><div class="ticker-num">QTS<span>&</span>DBS</span></div><div class="ticker-label">Safeguarding Compliant</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll">SEE MORE</div>
+  </section>
+
+  <!-- MISSION BAR -->
+  <div id="mission" aria-hidden="true">
+    <div class="mission-track">
+      <div class="mission-item">Expert One-to-One Tuition</div>
+      <div class="mission-item">GCSE &amp; A-Level</div>
+      <div class="mission-item">Maths &amp; English</div>
+      <div class="mission-item">Online &amp; In-Person</div>
+      <div class="mission-item">QTS</div>
+      <div class="mission-item">All Exam Boards</div>
+      <div class="mission-item">DBS Checked</div>
+      <div class="mission-item">Expert One-to-One Tuition</div>
+      <div class="mission-item">GCSE &amp; A-Level</div>
+      <div class="mission-item">Online &amp; In-Person</div>
+      <div class="mission-item">Batch Deals Available</div>
+      <div class="mission-item">DBS Checked</div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual">
+          <div class="about-photo">
+            <div class="photo-corner tl"></div><div class="photo-corner tr"></div>
+            <div class="photo-corner bl"></div><div class="photo-corner br"></div>
+            <div class="photo-icon">👤</div>
+            <div class="photo-placeholder"><img src="images/DuncanTuition.png" alt="Headshot of Ben Duncan" class="headshot-img" /></div>
+          </div>
+          <div class="about-data-pill">
+            <div class="data-val">5+</div>
+            <div class="data-lbl">Years' Experience</div>
+          </div>
+        </div>
+        <div class="about-copy">
+          <span class="tag">/ About</span>
+          <h2 class="section-heading">Built<br/><em>different.</em></h2>
+          <div class="rule"><span class="rule-text">Tutor Profile</span></div>
+          <p>I'm <strong style="color:var(--white);font-weight:600;">Ben Duncan</strong> — a specialist tutor in English with a track record of transforming students who feel stuck into students who dominate their exams.</p>
+          <p>My method is systematic and precise: diagnose gaps, build mastery from the ground up, and drill exam technique until every mark is earned by habit. No filler. No fluff. Just results.</p>
+          <ul class="creds">
+            <li class="cred-item"><div class="cred-dot"></div><span>MA in English Literature</span></li>
+            <li class="cred-item"><div class="cred-dot"></div><span>QTS Certified</span></li>
+            <li class="cred-item"><div class="cred-dot"></div><span>Enhanced DBS Checked</span></li>
+            <li class="cred-item"><div class="cred-dot"></div><span>5+ Years Quality Teaching Experience</span></li>
+            <li class="cred-item"><div class="cred-dot"></div><span>AQA · Edexcel · OCR Specialist</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUBJECTS -->
+  <section id="subjects">
+    <div class="container">
+      <span class="tag">/ Subjects</span>
+      <h2 class="section-heading">ALl Key Stages.<br/><em>Total</em> mastery.</h2>
+      <div class="rule"><span class="rule-text">GCSE &amp; A-Level</span></div>
+      <div class="subjects-layout">
+        <div class="subject-block">
+          <div class="subject-bg-glow"></div>
+          <div class="subject-num">Early</div>
+          <div class="subject-name">GCSE</div>
+          <div class="subject-levels-row"><span class="level-badge">GCSE</span></div>
+          <ul class="subject-topics">
+            <li>AQA, OCR, Edexcel</li>
+            <li>Literature Texts (GCSE)</li>
+            <li>Language &amp; Structure (GCSE)</li>
+            <li>Grammar</li>
+            <li>Past Paper &amp; Exam Technique Drilling</li>
+            <li>Fundamentals</li>
+          </ul>
+          <div class="subject-symbol">∑</div>
+        </div>
+        <div class="subject-block">
+          <div class="subject-bg-glow"></div>
+          <div class="subject-num">Advanced</div>
+          <div class="subject-name">KS5</div>
+          <div class="subject-levels-row"><span class="level-badge">A-Level</span></div>
+          <ul class="subject-topics">
+            <li>Literature: Prose, Poetry, Drama Analysis</li>
+            <li>Language: Reading &amp; Writing Skills</li>
+            <li>Essay Structure &amp; Argumentation</li>
+            <li>Language &amp; Literature Papers</li>
+            <li>A-Level Comparative &amp; Context Study</li>
+            <li>Coursework &amp; NEA Support</li>
+          </ul>
+          <div class="subject-symbol">∅</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section id="pricing">
+    <div class="container">
+      <span class="tag">/ Investment</span>
+      <h2 class="section-heading">Session <em>rates.</em></h2>
+      <div class="rule"><span class="rule-text">Transparent Pricing</span></div>
+      <div class="pricing-grid">
+        <div class="price-panel">
+          <div class="price-tier">Tier 01</div>
+          <div class="price-name">GCSE</div>
+          <div class="price-amount"><sup>£</sup>40</div>
+          <div class="price-per">per hour</div>
+          <hr class="price-divider"/>
+          <ul class="price-features">
+            <li>Maths or English — your choice</li>
+            <li>Past paper practice &amp; marking</li>
+            <li>Personalised revision notes</li>
+            <li>Email support between sessions</li>
+            <li>Progress tracking each session</li>
+          </ul>
+          <button class="btn-price" onclick="selectPlan('GCSE', 'Both')" class="your-existing-btn-class">GCSE — £40/session</button>
+        </div>
+        <div class="price-panel">
+          <div class="price-tier">Tier 02</div>
+          <div class="price-name">A-Level</div>
+          <div class="price-amount"><sup>£</sup>45</div>
+          <div class="price-per">per hour</div>
+          <hr class="price-divider"/>
+          <ul class="price-features">
+            <li>Advanced Maths or English</li>
+            <li>Deep exam technique coaching</li>
+            <li>Detailed written essay feedback</li>
+            <li>University application support</li>
+            <li>Priority scheduling</li>
+          </ul>
+<button class="btn-price" onclick="selectPlan('A-Level', 'Both')" class="your-existing-btn-class">A-Level — £45/session</button>        </div>
+        <div class="price-panel featured">
+          <div class="price-tier">Tier 03</div>
+          <div class="price-name">Bundle ×5</div>
+          <div class="price-amount">10% OFF</div>
+          <div class="price-per">block of 5 sessions</div>
+          <hr class="price-divider"/>
+          <ul class="price-features">
+            <li>Any level, any subject</li>
+            <li>Structured learning programme</li>
+            <li>Mid-block progress review</li>
+            <li>All resources included</li>
+            <li>Best value — save vs. pay-as-you-go</li>
+          </ul>
+          <button class="btn-price" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get Bundle →</button>
+        </div>
+      </div>
+      <p class="pricing-footnote">Referral bonus available — ask for details!</p>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-left">
+          <span class="tag">/ Contact</span>
+          <h2 class="section-heading">Begin<br/><em>mission.</em></h2>
+          <div class="rule"><span class="rule-text">Get in touch</span></div>
+          <p>Fill in the form and I'll respond within 24 hours to arrange a free consultation call. No obligation — just a conversation about what you want to achieve.</p>
+          <div class="contact-meta">
+            <div class="contact-row"><div class="contact-row-icon">📧</div><span>duncantuition@gmail.com</span></div>
+            <div class="contact-row"><div class="contact-row-icon">📍</div><span>Online (UK-wide) &amp; In-person: London</span></div>
+            <div class="contact-row"><div class="contact-row-icon">🕐</div><span>Mon–Sat, 8am–8pm</span></div>
+          </div>
+        </div>
+<div class="form-panel">
+  <form id="contact-form" action="https://formspree.io/f/xqeybran" method="POST">
+    <div class="form-row-2">
+      <div class="form-field">
+        <label for="first-name">First Name</label>
+        <input type="text" id="first-name" name="first_name" placeholder="First Name" required/>
+      </div>
+      <div class="form-field">
+        <label for="last-name">Last Name</label>
+        <input type="text" id="last-name" name="last_name" placeholder="Last Name" required/>
+      </div>
+    </div>
+    <div class="form-field">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="you@example.com" required/>
+    </div>
+    <div class="form-field">
+      <label for="phone">Phone (Optional)</label>
+      <input type="tel" id="phone" name="phone" placeholder="+44 7XXX XXXXXX"/>
+    </div>
+    <div class="form-row-2">
+      <div class="form-field">
+        <label for="level">Level</label>
+        <select id="level" name="level" required>
+          <option value="">Select…</option>
+          <option value="GCSE">GCSE</option>
+          <option value="A-Level">A-Level</option>
+          <option value="Not sure">Not sure</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label for="subject">Subject</label>
+        <select id="subject" name="subject" required>
+          <option value="">Select…</option>
+          <option value="English Literature">English Literature</option>
+          <option value="English Language">English Language</option>
+          <option value="Both">Both</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-field">
+      <label for="goals">Your Goals</label>
+      <textarea id="goals" name="goals" placeholder="e.g. I'm sitting GCSE English in June and targeting a Level 8. I struggle most with creative writing..."></textarea>
+    </div>
+    <button type="submit" class="form-submit-btn">Initiate Contact →</button>
+    <p class="form-secure">🔒 Your details are never shared with third parties</p>
+  </form>
+</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">Duncan<span>Tuition</span></div>
+        <ul class="footer-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#subjects">Subjects</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="footer-copy">© 2025 DuncanTuition</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // STARFIELD
+    (function(){
+      const canvas=document.getElementById('starfield');
+      const ctx=canvas.getContext('2d');
+      let W,H,stars=[];
+      function resize(){ W=canvas.width=window.innerWidth; H=canvas.height=window.innerHeight; }
+      function initStars(){
+        stars=[];
+        for(let i=0;i<220;i++) stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.2,a:Math.random(),twinkle:Math.random()*Math.PI*2,speed:Math.random()*.3+.05});
+      }
+      function draw(){
+        ctx.clearRect(0,0,W,H);
+        stars.forEach(s=>{
+          s.twinkle+=s.speed*.04;
+          const alpha=s.a*(.5+.5*Math.sin(s.twinkle));
+          ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+          ctx.fillStyle=`rgba(0,168,255,${alpha*.75})`; ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+      window.addEventListener('resize',()=>{ resize(); initStars(); });
+      resize(); initStars(); draw();
+    })();
+
+    function selectPlan(level, subject) {
+  // Pre-fill the dropdowns
+  document.getElementById('level').value = level;
+  document.getElementById('subject').value = subject;
+
+  // Scroll smoothly to the form
+  document.getElementById('contact-form').scrollIntoView({ 
+    behavior: 'smooth', 
+    block: 'start' 
+  });
+
+  // Briefly highlight the form so the user sees it's been filled
+  const form = document.getElementById('contact-form');
+  form.style.transition = 'box-shadow 0.3s';
+  form.style.boxShadow = '0 0 0 3px rgba(0, 200, 83, 0.4)';
+  setTimeout(() => { form.style.boxShadow = ''; }, 1500);
+
+  // Focus the first name field so the user can just start typing
+  document.getElementById('first-name').focus();
+}
+
+    // CURSOR
+    const dot=document.getElementById('cursorDot');
+    const ring=document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove',e=>{ mx=e.clientX; my=e.clientY; });
+    (function animCursor(){
+      dot.style.left=mx+'px'; dot.style.top=my+'px';
+      rx+=(mx-rx)*.12; ry+=(my-ry)*.12;
+      ring.style.left=rx+'px'; ring.style.top=ry+'px';
+      requestAnimationFrame(animCursor);
+    })();
+    document.querySelectorAll('a,button').forEach(el=>{
+      el.addEventListener('mouseenter',()=>{ ring.style.width='50px'; ring.style.height='50px'; ring.style.borderColor='rgba(0,168,255,.7)'; });
+      el.addEventListener('mouseleave',()=>{ ring.style.width='32px'; ring.style.height='32px'; ring.style.borderColor='rgba(0,168,255,.4)'; });
+    });
+
+    // NAV
+    function toggleNav(){ document.getElementById('navLinks').classList.toggle('open'); }
+    document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>document.getElementById('navLinks').classList.remove('open')));
+
+    // SCROLL REVEAL
+    const obs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; }});
+    },{threshold:.08});
+    document.querySelectorAll('.subject-block,.price-panel,.cred-item,.contact-row').forEach(el=>{
+      el.style.opacity='0'; el.style.transform='translateY(24px)'; el.style.transition='opacity .6s ease,transform .6s ease';
+      obs.observe(el);
+    });
+
+    // FORM
+  document.getElementById('contact-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const form = e.target;
+    const btn = form.querySelector('button[type="submit"]');
+
+    // Basic validation — check required selects
+    const level = form.querySelector('#level').value;
+    const subject = form.querySelector('#subject').value;
+    if (!level || !subject) {
+      alert('Please select a level and subject.');
+      return; 
+    }
+
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    const response = await fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    });
+
+    if (response.ok) {
+      btn.textContent = '✓ Message sent — I\'ll be in touch soon';
+      btn.style.background = '#00c853';
+      form.reset();
+      setTimeout(() => {
+        btn.textContent = 'Initiate Contact →';
+        btn.style.background = '';
+        btn.disabled = false;
+      }, 4000);
+    } else {
+      btn.textContent = 'Something went wrong — please try again';
+      btn.disabled = false;
+      setTimeout(() => {
+        btn.textContent = 'Initiate Contact →';
+      }, 3000);
+    }
+  });
+  </script>
+</body>
+</html>
