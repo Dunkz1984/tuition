@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Blog — DuncanTuition</title>
+  <meta name="description" content="Exam strategy, language analysis guides, and revision advice from specialist English tutor Ben Duncan."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,300;0,400;0,600;0,700;0,900;1,300&family=Barlow+Condensed:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --black:   #020408;
+      --void:    #050a10;
+      --panel:   #0a1220;
+      --edge:    #0f1e30;
+      --blue:    #00a8ff;
+      --blue-dim:#0070bb;
+      --white:   #f0f4f8;
+      --mid:     #4a6070;
+      --dim:     #1e2e3e;
+      --serif:   'Barlow Condensed', sans-serif;
+      --body:    'Barlow', sans-serif;
+      --radius:  4px;
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      body { cursor: default !important; }
+      #cursorDot, #cursorRing { display: none !important; }
+    }
+
+    body {
+      font-family: var(--body);
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* CURSOR */
+    .cursor-dot {
+      width: 6px; height: 6px; background: var(--blue);
+      border-radius: 50%; position: fixed; pointer-events: none;
+      z-index: 9999; box-shadow: 0 0 10px var(--blue);
+      transform: translate(-50%,-50%);
+    }
+    .cursor-ring {
+      width: 32px; height: 32px; border: 1px solid rgba(0,168,255,0.4);
+      border-radius: 50%; position: fixed; pointer-events: none;
+      z-index: 9998; transition: width 0.2s, height 0.2s, border-color 0.2s;
+      transform: translate(-50%,-50%);
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--void); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); }
+
+    /* STARFIELD */
+    #starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.7; }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+
+    .tag {
+      display: inline-block;
+      font-family: var(--serif); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.22em; text-transform: uppercase; color: var(--blue);
+      border: 1px solid var(--blue-dim); padding: 5px 12px; border-radius: 2px;
+      background: rgba(0,168,255,0.05); margin-bottom: 20px;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      background: rgba(2,4,8,0.88); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,168,255,0.08);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .nav-logo { font-family: var(--serif); font-size: 1.4rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-logo span { color: var(--blue); }
+    .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+    .nav-links a { font-family: var(--serif); font-size: 0.8rem; font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); transition: color 0.2s; display: inline-block; padding: 8px 4px; }
+    .nav-links a:hover, .nav-links a.active { color: var(--blue); }
+    .nav-cta-btn { border: 1px solid var(--blue) !important; color: var(--blue) !important; padding: 9px 20px; border-radius: 2px; transition: background 0.2s, color 0.2s !important; }
+    .nav-cta-btn:hover { background: var(--blue) !important; color: var(--black) !important; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--white); }
+
+    /* BLOG HERO */
+    .blog-hero {
+      position: relative; z-index: 2;
+      padding: 140px 0 64px;
+      background: var(--void);
+      overflow: hidden;
+    }
+    .blog-hero-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(0,168,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,168,255,0.03) 1px,transparent 1px);
+      background-size: 80px 80px;
+    }
+    .blog-hero-glow {
+      position: absolute; width: 500px; height: 500px; top: -80px; right: -60px;
+      background: radial-gradient(circle,rgba(0,168,255,0.07) 0%,transparent 65%);
+      pointer-events: none;
+    }
+    .blog-hero-content { position: relative; z-index: 3; }
+    .blog-hero-label { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .blog-hero-label-line { width: 32px; height: 1px; background: var(--blue); }
+    .blog-hero-label-text { font-family: var(--serif); font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--blue); }
+    .blog-hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 900; text-transform: uppercase;
+      letter-spacing: -0.01em; line-height: 0.95;
+      margin-bottom: 20px;
+    }
+    .blog-hero h1 em { font-style: italic; color: var(--blue); font-weight: 300; }
+    .blog-hero-sub {
+      font-size: 0.95rem; font-weight: 300; color: var(--mid);
+      max-width: 480px; line-height: 1.75;
+    }
+
+    /* CATEGORY FILTER BAR */
+    .filter-bar {
+      position: relative; z-index: 2;
+      background: var(--void);
+      border-bottom: 1px solid var(--dim);
+      padding: 0;
+    }
+    .filter-inner {
+      display: flex; align-items: center; gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .filter-inner::-webkit-scrollbar { display: none; }
+    .filter-btn {
+      font-family: var(--serif); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--mid); background: transparent; border: none;
+      border-bottom: 2px solid transparent;
+      padding: 18px 24px; cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .filter-btn:hover { color: var(--white); }
+    .filter-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+    /* BLOG LAYOUT */
+    .blog-layout {
+      position: relative; z-index: 2;
+      padding: 64px 0 120px;
+      background: var(--black);
+    }
+    .blog-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 56px;
+      align-items: start;
+    }
+
+    /* POST CARDS */
+    .post-list { display: flex; flex-direction: column; gap: 2px; }
+
+    .post-card {
+      background: var(--panel);
+      border: 1px solid var(--dim);
+      border-radius: var(--radius);
+      padding: 36px 40px;
+      position: relative; overflow: hidden;
+      transition: border-color 0.3s, transform 0.3s;
+      display: block;
+    }
+    .post-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: linear-gradient(90deg, var(--blue), transparent);
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+    }
+    .post-card:hover { border-color: var(--blue-dim); transform: translateX(4px); }
+    .post-card:hover::before { transform: scaleX(1); }
+
+    .post-card.featured {
+      background: var(--edge);
+      border-color: var(--blue-dim);
+      padding: 48px 40px;
+      margin-bottom: 16px;
+    }
+    .post-card.featured::before { transform: scaleX(1); }
+    .featured-label {
+      font-family: var(--serif); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--black); background: var(--blue);
+      display: inline-block; padding: 3px 10px; border-radius: 2px;
+      margin-bottom: 16px;
+    }
+
+    .post-meta {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 14px;
+    }
+    .post-cat {
+      font-family: var(--serif); font-size: 9px; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--blue); border: 1px solid var(--blue-dim);
+      padding: 3px 9px; border-radius: 2px;
+      background: rgba(0,168,255,0.05);
+    }
+    .post-date {
+      font-size: 11px; letter-spacing: 0.1em;
+      color: var(--mid); text-transform: uppercase;
+    }
+    .post-read-time {
+      font-size: 11px; letter-spacing: 0.08em; color: var(--mid);
+      margin-left: auto;
+    }
+
+    .post-card h2 {
+      font-family: var(--serif); font-weight: 700;
+      font-size: 1.7rem; text-transform: uppercase;
+      letter-spacing: 0.01em; line-height: 1.1;
+      margin-bottom: 12px; color: var(--white);
+      transition: color 0.2s;
+    }
+    .post-card:hover h2 { color: var(--blue); }
+    .post-card.featured h2 { font-size: 2.2rem; }
+
+    .post-card p {
+      font-size: 0.9rem; font-weight: 300;
+      color: rgba(240,244,248,0.5); line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .post-read-more {
+      font-family: var(--serif); font-size: 10px;
+      font-weight: 600; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--blue);
+      display: flex; align-items: center; gap: 8px;
+    }
+    .post-read-more::after {
+      content: '→'; transition: transform 0.2s;
+    }
+    .post-card:hover .post-read-more::after { transform: translateX(4px); }
+
+    /* SIDEBAR */
+    .sidebar { position: sticky; top: 88px; }
+
+    .sidebar-block {
+      background: var(--panel); border: 1px solid var(--dim);
+      border-radius: var(--radius); padding: 28px; margin-bottom: 16px;
+      position: relative; overflow: hidden;
+    }
+    .sidebar-block::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 1px; background: linear-gradient(90deg, var(--blue), transparent);
+    }
+    .sidebar-heading {
+      font-family: var(--serif); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-heading::after { content: ''; flex: 1; height: 1px; background: var(--dim); }
+
+    /* About block */
+    .sidebar-about p {
+      font-size: 0.875rem; font-weight: 300;
+      color: rgba(240,244,248,0.5); line-height: 1.75;
+      margin-bottom: 20px;
+    }
+    .btn-sidebar {
+      width: 100%; font-family: var(--serif); font-size: 0.75rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      background: var(--blue); color: var(--black); font-weight: 700;
+      padding: 13px; border: none; border-radius: 2px; cursor: pointer;
+      transition: box-shadow 0.2s; box-shadow: 0 0 20px rgba(0,168,255,0.25);
+      display: block; text-align: center;
+    }
+    .btn-sidebar:hover { box-shadow: 0 0 36px rgba(0,168,255,0.5); }
+
+    /* Category list */
+    .cat-list { display: flex; flex-direction: column; gap: 4px; }
+    .cat-link {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; border-radius: 2px;
+      font-family: var(--serif); font-size: 11px;
+      font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--mid); transition: color 0.2s, background 0.2s;
+      cursor: pointer;
+    }
+    .cat-link:hover { color: var(--blue); background: rgba(0,168,255,0.04); }
+    .cat-count {
+      font-size: 10px; color: var(--mid);
+      background: var(--dim); padding: 2px 8px; border-radius: 2px;
+    }
+
+    /* Recent posts */
+    .recent-list { display: flex; flex-direction: column; gap: 0; }
+    .recent-item {
+      padding: 12px 0; border-bottom: 1px solid var(--dim);
+      cursor: pointer;
+    }
+    .recent-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .recent-item-title {
+      font-size: 0.85rem; font-weight: 400; color: rgba(240,244,248,0.6);
+      line-height: 1.4; margin-bottom: 4px; transition: color 0.2s;
+    }
+    .recent-item:hover .recent-item-title { color: var(--blue); }
+    .recent-item-date { font-size: 10px; letter-spacing: 0.1em; color: var(--mid); text-transform: uppercase; }
+
+    /* Resources block */
+    .resource-list { display: flex; flex-direction: column; gap: 8px; }
+    .resource-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border: 1px solid var(--dim); border-radius: 2px;
+      font-size: 0.8rem; color: rgba(240,244,248,0.5);
+      transition: border-color 0.2s, color 0.2s;
+      cursor: pointer;
+    }
+    .resource-link:hover { border-color: var(--blue-dim); color: var(--white); }
+    .resource-link::before { content: '↗'; color: var(--blue); font-size: 0.75rem; }
+
+    /* PAGINATION */
+    .pagination {
+      display: flex; align-items: center; gap: 4px;
+      margin-top: 48px;
+    }
+    .page-btn {
+      font-family: var(--serif); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      border: 1px solid var(--dim); border-radius: 2px;
+      color: var(--mid); background: transparent; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .page-btn:hover { border-color: var(--blue); color: var(--blue); }
+    .page-btn.active { background: var(--blue); border-color: var(--blue); color: var(--black); }
+    .page-btn.arrow { width: auto; padding: 0 14px; }
+
+    /* FOOTER */
+    footer {
+      position: relative; z-index: 2;
+      background: var(--void); border-top: 1px solid rgba(0,168,255,0.07);
+      padding: 48px 0 32px;
+    }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; }
+    .footer-logo { font-family: var(--serif); font-size: 1.2rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+    .footer-logo span { color: var(--blue); }
+    .footer-links { display: flex; gap: 28px; list-style: none; }
+    .footer-links a { font-family: var(--serif); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--blue); }
+    .footer-copy { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .container { padding: 0 20px; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: rgba(2,4,8,0.97); padding: 24px 40px; gap: 20px; border-bottom: 1px solid var(--dim); }
+      .nav-links.open { display: flex; }
+      .nav-hamburger { display: flex; }
+      .blog-grid { grid-template-columns: 1fr; }
+      .sidebar { position: static; margin-top: 40px; }
+      .post-card { padding: 24px; }
+      .post-card.featured { padding: 28px; }
+      .post-card.featured h2 { font-size: 1.6rem; }
+      .post-read-time { display: none; }
+      .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <canvas id="starfield"></canvas>
+
+  <!-- NAV -->
+  <nav>
+    <div class="container">
+      <div class="nav-inner">
+        <a href="/" class="nav-logo">Duncan<span>Tuition</span></a>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#subjects">Subjects</a></li>
+          <li><a href="/#pricing">Pricing</a></li>
+          <li><a href="/blog/" class="active">Blog</a></li>
+          <li><a href="/#contact" class="nav-cta-btn">Book Now</a></li>
+        </ul>
+        <div class="nav-hamburger" id="hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BLOG HERO -->
+  <section class="blog-hero">
+    <div class="blog-hero-grid"></div>
+    <div class="blog-hero-glow"></div>
+    <div class="container">
+      <div class="blog-hero-content">
+        <div class="blog-hero-label">
+          <div class="blog-hero-label-line"></div>
+          <div class="blog-hero-label-text">/ Resources</div>
+        </div>
+        <h1>Exam insight.<br><em>No filler.</em></h1>
+        <p class="blog-hero-sub">Guides, technique breakdowns, and exam strategy — written for students who want results and parents who want answers.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="container">
+      <div class="filter-inner">
+        <button class="filter-btn active" onclick="filterPosts('all', this)">All Posts</button>
+        <button class="filter-btn" onclick="filterPosts('aqa-lang', this)">AQA Language</button>
+        <button class="filter-btn" onclick="filterPosts('aqa-lit', this)">AQA Literature</button>
+        <button class="filter-btn" onclick="filterPosts('technique', this)">Exam Technique</button>
+        <button class="filter-btn" onclick="filterPosts('study', this)">Study Skills</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BLOG LAYOUT -->
+  <section class="blog-layout">
+    <div class="container">
+      <div class="blog-grid">
+
+        <!-- POSTS -->
+        <main>
+          <!-- FEATURED POST -->
+          <a class="post-card featured" href="/blog/posts/q4-evaluation-method.html" data-cat="technique">
+            <div class="featured-label">Featured</div>
+            <div class="post-meta">
+              <span class="post-cat">Exam Technique</span>
+              <span class="post-date">14 Mar 2026</span>
+              <span class="post-read-time">6 min read</span>
+            </div>
+            <h2>How to approach Question 4 on AQA English Language Paper 1</h2>
+            <p>The evaluation question trips up more students than any other on Paper 1. Here's a systematic method — built from the mark scheme up — for hitting the top band every time.</p>
+            <span class="post-read-more">Read Article</span>
+          </a>
+
+          <!-- POST LIST -->
+          <div class="post-list" id="postList">
+
+            <a class="post-card" href="/blog/posts/what-examiners-want.html" data-cat="aqa-lang">
+              <div class="post-meta">
+                <span class="post-cat">AQA Language</span>
+                <span class="post-date">7 Mar 2026</span>
+                <span class="post-read-time">5 min read</span>
+              </div>
+              <h2>What examiners actually want from a language analysis answer</h2>
+              <p>Most students identify techniques. Top students explain effect. Here's the difference — and how to make the switch before your exam.</p>
+              <span class="post-read-more">Read Article</span>
+            </a>
+
+            <a class="post-card" href="/blog/posts/revision-mistake.html" data-cat="study">
+              <div class="post-meta">
+                <span class="post-cat">Study Skills</span>
+                <span class="post-date">28 Feb 2026</span>
+                <span class="post-read-time">4 min read</span>
+              </div>
+              <h2>The revision mistake almost every GCSE student makes</h2>
+              <p>Re-reading notes feels productive. It isn't. What cognitive science says about effective revision — and what to do instead.</p>
+              <span class="post-read-more">Read Article</span>
+            </a>
+
+            <a class="post-card" href="/blog/posts/paper-1-structure.html" data-cat="aqa-lang">
+              <div class="post-meta">
+                <span class="post-cat">AQA Language</span>
+                <span class="post-date">20 Feb 2026</span>
+                <span class="post-read-time">7 min read</span>
+              </div>
+              <h2>Breaking down AQA English Language Paper 1: a question-by-question guide</h2>
+              <p>A clear walkthrough of all four questions — what each is testing, how long to spend, and where most marks are lost.</p>
+              <span class="post-read-more">Read Article</span>
+            </a>
+
+            <a class="post-card" href="/blog/posts/macbeth-themes.html" data-cat="aqa-lit">
+              <div class="post-meta">
+                <span class="post-cat">AQA Literature</span>
+                <span class="post-date">10 Feb 2026</span>
+                <span class="post-read-time">8 min read</span>
+              </div>
+              <h2>Macbeth: the five themes you must be able to write about</h2>
+              <p>Ambition, power, guilt, fate, gender — how to move beyond surface-level analysis and write with the depth examiners reward.</p>
+              <span class="post-read-more">Read Article</span>
+            </a>
+
+            <a class="post-card" href="/blog/posts/timed-writing.html" data-cat="technique">
+              <div class="post-meta">
+                <span class="post-cat">Exam Technique</span>
+                <span class="post-date">1 Feb 2026</span>
+                <span class="post-read-time">5 min read</span>
+              </div>
+              <h2>Why timed writing practice beats any other revision method</h2>
+              <p>Knowing the content is not the same as being able to produce it under pressure. Here's how to train for exam conditions.</p>
+              <span class="post-read-more">Read Article</span>
+            </a>
+
+          </div>
+
+          <!-- PAGINATION -->
+          <div class="pagination">
+            <button class="page-btn arrow">← Prev</button>
+            <button class="page-btn active">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">3</button>
+            <button class="page-btn arrow">Next →</button>
+          </div>
+        </main>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+          <!-- About Ben -->
+          <div class="sidebar-block">
+            <div class="sidebar-heading">About Ben</div>
+            <div class="sidebar-about">
+              <p>MA English Literature · QTS Certified · Enhanced DBS · 5+ years specialist GCSE &amp; A-Level tuition across AQA, Edexcel, and OCR.</p>
+              <a href="/#contact" class="btn-sidebar">Book a Session</a>
+            </div>
+          </div>
+
+          <!-- Categories -->
+          <div class="sidebar-block">
+            <div class="sidebar-heading">Categories</div>
+            <div class="cat-list">
+              <div class="cat-link" onclick="filterPosts('aqa-lang', null)">
+                AQA Language <span class="cat-count">8</span>
+              </div>
+              <div class="cat-link" onclick="filterPosts('aqa-lit', null)">
+                AQA Literature <span class="cat-count">5</span>
+              </div>
+              <div class="cat-link" onclick="filterPosts('technique', null)">
+                Exam Technique <span class="cat-count">6</span>
+              </div>
+              <div class="cat-link" onclick="filterPosts('study', null)">
+                Study Skills <span class="cat-count">4</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Posts -->
+          <div class="sidebar-block">
+            <div class="sidebar-heading">Recent Posts</div>
+            <div class="recent-list">
+              <div class="recent-item">
+                <div class="recent-item-title">Q4: the evaluation method that works</div>
+                <div class="recent-item-date">14 Mar 2026</div>
+              </div>
+              <div class="recent-item">
+                <div class="recent-item-title">What examiners want from analysis</div>
+                <div class="recent-item-date">7 Mar 2026</div>
+              </div>
+              <div class="recent-item">
+                <div class="recent-item-title">The revision mistake students make</div>
+                <div class="recent-item-date">28 Feb 2026</div>
+              </div>
+              <div class="recent-item">
+                <div class="recent-item-title">Paper 1: question-by-question guide</div>
+                <div class="recent-item-date">20 Feb 2026</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Resources -->
+          <div class="sidebar-block">
+            <div class="sidebar-heading">Useful Links</div>
+            <div class="resource-list">
+              <div class="resource-link">AQA English Language spec</div>
+              <div class="resource-link">AQA English Literature spec</div>
+              <div class="resource-link">Past papers &amp; mark schemes</div>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">Duncan<span>Tuition</span></div>
+        <ul class="footer-links">
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#subjects">Subjects</a></li>
+          <li><a href="/#pricing">Pricing</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+        <div class="footer-copy">&copy; 2026 DuncanTuition</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // CURSOR
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx+'px'; dot.style.top = my+'px'; });
+    (function lerp() {
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx+'px'; ring.style.top = ry+'px';
+      requestAnimationFrame(lerp);
+    })();
+
+    // STARFIELD
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    function initStars() {
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+      stars = Array.from({length: 120}, () => ({
+        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+        r: Math.random() * 1.2, o: Math.random() * 0.6 + 0.1,
+        s: Math.random() * 0.3 + 0.05
+      }));
+    }
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        s.o += Math.sin(Date.now() * s.s * 0.001) * 0.005;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,168,255,${Math.max(0,Math.min(1,s.o))})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+    initStars(); drawStars();
+    window.addEventListener('resize', initStars);
+
+    // FILTER
+    function filterPosts(cat, btn) {
+      const cards = document.querySelectorAll('#postList .post-card');
+      cards.forEach(card => {
+        card.style.display = (cat === 'all' || card.dataset.cat === cat) ? 'block' : 'none';
+      });
+      if (btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>
