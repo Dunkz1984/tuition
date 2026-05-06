@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Post Title — DuncanTuition</title>
+  <meta name="description" content="The Law of Diminishing Returns: How Examiners Think about GCSEs."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,300;0,400;0,600;0,700;0,900;1,300&family=Barlow+Condensed:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --black:   #020408;
+      --void:    #050a10;
+      --panel:   #0a1220;
+      --edge:    #0f1e30;
+      --blue:    #00a8ff;
+      --blue-dim:#0070bb;
+      --white:   #f0f4f8;
+      --mid:     #4a6070;
+      --dim:     #1e2e3e;
+      --serif:   'Barlow Condensed', sans-serif;
+      --body:    'Barlow', sans-serif;
+      --radius:  4px;
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      body { cursor: default !important; }
+      #cursorDot, #cursorRing { display: none !important; }
+    }
+
+    body {
+      font-family: var(--body);
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* CURSOR */
+    .cursor-dot {
+      width: 6px; height: 6px; background: var(--blue);
+      border-radius: 50%; position: fixed; pointer-events: none;
+      z-index: 9999; box-shadow: 0 0 10px var(--blue);
+      transform: translate(-50%,-50%);
+    }
+    .cursor-ring {
+      width: 32px; height: 32px; border: 1px solid rgba(0,168,255,0.4);
+      border-radius: 50%; position: fixed; pointer-events: none;
+      z-index: 9998; transition: width 0.2s, height 0.2s, border-color 0.2s;
+      transform: translate(-50%,-50%);
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--void); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); }
+
+    #starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.7; }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+    a { color: inherit; text-decoration: none; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      background: rgba(2,4,8,0.88); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,168,255,0.08);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .nav-logo { font-family: var(--serif); font-size: 1.4rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-logo span { color: var(--blue); }
+    .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+    .nav-links a { font-family: var(--serif); font-size: 0.8rem; font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); transition: color 0.2s; display: inline-block; padding: 8px 4px; }
+    .nav-links a:hover, .nav-links a.active { color: var(--blue); }
+    .nav-cta-btn { border: 1px solid var(--blue) !important; color: var(--blue) !important; padding: 9px 20px; border-radius: 2px; transition: background 0.2s, color 0.2s !important; }
+    .nav-cta-btn:hover { background: var(--blue) !important; color: var(--black) !important; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--white); }
+
+    /* POST HERO */
+    .post-hero {
+      position: relative; z-index: 2;
+      padding: 140px 0 64px;
+      background: var(--void);
+      overflow: hidden;
+    }
+    .post-hero-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(0,168,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,168,255,0.03) 1px,transparent 1px);
+      background-size: 80px 80px;
+    }
+    .post-hero-glow {
+      position: absolute; width: 500px; height: 500px; top: -80px; right: -60px;
+      background: radial-gradient(circle,rgba(0,168,255,0.07) 0%,transparent 65%);
+      pointer-events: none;
+    }
+    .post-hero-content { position: relative; z-index: 3; max-width: 780px; }
+
+    .breadcrumb {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--serif); font-size: 10px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 24px;
+    }
+    .breadcrumb a { color: var(--blue); transition: opacity 0.2s; }
+    .breadcrumb a:hover { opacity: 0.7; }
+    .breadcrumb span { color: var(--dim); }
+
+    .post-meta-hero {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 20px;
+    }
+    .post-cat-badge {
+      font-family: var(--serif); font-size: 9px; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--blue); border: 1px solid var(--blue-dim);
+      padding: 3px 9px; border-radius: 2px;
+      background: rgba(0,168,255,0.05);
+    }
+    .post-date-hero { font-size: 11px; letter-spacing: 0.1em; color: var(--mid); text-transform: uppercase; }
+    .post-read-time-hero { font-size: 11px; letter-spacing: 0.08em; color: var(--mid); }
+
+    .post-hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 900; text-transform: uppercase;
+      letter-spacing: -0.01em; line-height: 1;
+      margin-bottom: 20px;
+    }
+    .post-hero h1 em { font-style: italic; color: var(--blue); font-weight: 300; }
+    .post-hero-sub {
+      font-size: 1rem; font-weight: 300; color: var(--mid);
+      line-height: 1.75; max-width: 600px;
+    }
+
+    /* PROGRESS BAR */
+    .progress-bar {
+      position: fixed; top: 64px; left: 0; right: 0; z-index: 499;
+      height: 2px; background: var(--dim);
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--blue), var(--blue-dim));
+      transition: width 0.1s linear;
+    }
+
+    /* ARTICLE LAYOUT */
+    .article-layout {
+      position: relative; z-index: 2;
+      padding: 64px 0 120px;
+      background: var(--black);
+    }
+    .article-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 56px;
+      align-items: start;
+    }
+
+    /* ARTICLE BODY */
+    .article-body { min-width: 0; }
+
+    .article-body p {
+      font-size: 1rem; font-weight: 300;
+      color: rgba(240,244,248,0.65); line-height: 1.9;
+      margin-bottom: 24px;
+    }
+    .article-body h2 {
+      font-family: var(--serif); font-size: 2rem; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 0.01em;
+      color: var(--white); margin: 48px 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--dim);
+    }
+    .article-body h3 {
+      font-family: var(--serif); font-size: 1.3rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--white); margin: 32px 0 12px;
+    }
+    .article-body strong {
+      color: var(--white); font-weight: 600;
+    }
+    .article-body em {
+      color: var(--blue); font-style: italic;
+    }
+    .article-body ul, .article-body ol {
+      margin: 0 0 24px 0; padding: 0;
+      list-style: none; display: flex; flex-direction: column; gap: 10px;
+    }
+    .article-body ul li, .article-body ol li {
+      font-size: 0.95rem; font-weight: 300;
+      color: rgba(240,244,248,0.65); line-height: 1.75;
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .article-body ul li::before {
+      content: '—'; color: var(--blue-dim);
+      font-size: 0.75rem; margin-top: 4px; flex-shrink: 0;
+    }
+    .article-body ol { counter-reset: ol-counter; }
+    .article-body ol li { counter-increment: ol-counter; }
+    .article-body ol li::before {
+      content: counter(ol-counter);
+      font-family: var(--serif); font-size: 0.75rem; font-weight: 700;
+      color: var(--blue); background: rgba(0,168,255,0.08);
+      border: 1px solid var(--blue-dim); border-radius: 2px;
+      width: 22px; height: 22px; display: flex; align-items: center;
+      justify-content: center; flex-shrink: 0; margin-top: 2px;
+    }
+
+    /* PULLQUOTE */
+    .pullquote {
+      border-left: 2px solid var(--blue);
+      margin: 40px 0; padding: 20px 28px;
+      background: var(--panel);
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    .pullquote p {
+      font-family: var(--serif); font-size: 1.4rem; font-weight: 300;
+      font-style: italic; color: var(--white) !important;
+      line-height: 1.5; margin: 0 !important;
+    }
+
+    /* KEY POINT BOX */
+    .key-point {
+      background: var(--panel); border: 1px solid var(--blue-dim);
+      border-radius: var(--radius); padding: 24px 28px;
+      margin: 32px 0; position: relative; overflow: hidden;
+    }
+    .key-point::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: linear-gradient(90deg, var(--blue), transparent);
+    }
+    .key-point-label {
+      font-family: var(--serif); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 10px;
+    }
+    .key-point p {
+      font-size: 0.9rem !important; color: rgba(240,244,248,0.7) !important;
+      margin: 0 !important;
+    }
+
+    /* POST FOOTER */
+    .post-footer {
+      margin-top: 64px; padding-top: 40px;
+      border-top: 1px solid var(--dim);
+    }
+    .post-footer-label {
+      font-family: var(--serif); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 20px;
+    }
+    .post-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+    .post-tag {
+      font-family: var(--serif); font-size: 9px; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--mid); border: 1px solid var(--dim);
+      padding: 5px 12px; border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s; cursor: pointer;
+    }
+    .post-tag:hover { border-color: var(--blue-dim); color: var(--blue); }
+
+    .author-card {
+      display: flex; align-items: flex-start; gap: 20px;
+      background: var(--panel); border: 1px solid var(--dim);
+      border-radius: var(--radius); padding: 28px;
+      position: relative; overflow: hidden;
+    }
+    .author-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 1px; background: linear-gradient(90deg, var(--blue), transparent);
+    }
+    .author-avatar {
+      width: 52px; height: 52px; border-radius: 2px;
+      background: var(--edge); border: 1px solid var(--blue-dim);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 1.2rem; font-weight: 900;
+      color: var(--blue); flex-shrink: 0;
+    }
+    .author-info { flex: 1; }
+    .author-name {
+      font-family: var(--serif); font-size: 1rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--white); margin-bottom: 6px;
+    }
+    .author-bio {
+      font-size: 0.85rem; font-weight: 300;
+      color: rgba(240,244,248,0.5); line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .author-cta {
+      font-family: var(--serif); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--black); background: var(--blue);
+      padding: 7px 16px; border-radius: 2px; display: inline-block;
+      transition: box-shadow 0.2s;
+    }
+    .author-cta:hover { box-shadow: 0 0 20px rgba(0,168,255,0.4); }
+
+    /* SIDEBAR */
+    .sidebar { position: sticky; top: 88px; }
+
+    .sidebar-block {
+      background: var(--panel); border: 1px solid var(--dim);
+      border-radius: var(--radius); padding: 28px; margin-bottom: 16px;
+      position: relative; overflow: hidden;
+    }
+    .sidebar-block::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 1px; background: linear-gradient(90deg, var(--blue), transparent);
+    }
+    .sidebar-heading {
+      font-family: var(--serif); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-heading::after { content: ''; flex: 1; height: 1px; background: var(--dim); }
+
+    /* Table of contents */
+    .toc-list { display: flex; flex-direction: column; gap: 4px; list-style: none; }
+    .toc-item a {
+      display: block; padding: 8px 10px;
+      font-size: 0.82rem; font-weight: 300;
+      color: rgba(240,244,248,0.5); line-height: 1.4;
+      border-left: 1px solid var(--dim);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .toc-item a:hover, .toc-item.active a {
+      color: var(--blue); border-left-color: var(--blue);
+    }
+    .toc-item.h3 a { padding-left: 20px; font-size: 0.78rem; }
+
+    /* About block */
+    .sidebar-about p {
+      font-size: 0.875rem; font-weight: 300;
+      color: rgba(240,244,248,0.5); line-height: 1.75;
+      margin-bottom: 20px;
+    }
+    .btn-sidebar {
+      width: 100%; font-family: var(--serif); font-size: 0.75rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      background: var(--blue); color: var(--black); font-weight: 700;
+      padding: 13px; border: none; border-radius: 2px; cursor: pointer;
+      transition: box-shadow 0.2s; box-shadow: 0 0 20px rgba(0,168,255,0.25);
+      display: block; text-align: center;
+    }
+    .btn-sidebar:hover { box-shadow: 0 0 36px rgba(0,168,255,0.5); }
+
+    /* Related posts */
+    .related-list { display: flex; flex-direction: column; gap: 0; }
+    .related-item {
+      padding: 12px 0; border-bottom: 1px solid var(--dim);
+      cursor: pointer; display: block;
+    }
+    .related-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .related-item-cat {
+      font-family: var(--serif); font-size: 9px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 4px;
+    }
+    .related-item-title {
+      font-size: 0.82rem; font-weight: 400;
+      color: rgba(240,244,248,0.55); line-height: 1.4;
+      transition: color 0.2s;
+    }
+    .related-item:hover .related-item-title { color: var(--blue); }
+
+    /* FOOTER */
+    footer {
+      position: relative; z-index: 2;
+      background: var(--void); border-top: 1px solid rgba(0,168,255,0.07);
+      padding: 48px 0 32px;
+    }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; }
+    .footer-logo { font-family: var(--serif); font-size: 1.2rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+    .footer-logo span { color: var(--blue); }
+    .footer-links { display: flex; gap: 28px; list-style: none; }
+    .footer-links a { font-family: var(--serif); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--blue); }
+    .footer-copy { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+      .container { padding: 0 20px; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: rgba(2,4,8,0.97); padding: 24px 40px; gap: 20px; border-bottom: 1px solid var(--dim); }
+      .nav-links.open { display: flex; }
+      .nav-hamburger { display: flex; }
+      .article-grid { grid-template-columns: 1fr; }
+      .sidebar { position: static; margin-top: 40px; }
+      .author-card { flex-direction: column; }
+      .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <canvas id="starfield"></canvas>
+
+  <!-- READING PROGRESS BAR -->
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="container">
+      <div class="nav-inner">
+        <a href="/" class="nav-logo">Duncan<span>Tuition</span></a>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#subjects">Subjects</a></li>
+          <li><a href="/#pricing">Pricing</a></li>
+          <li><a href="/blog/" class="active">Blog</a></li>
+          <li><a href="/#contact" class="nav-cta-btn">Book Now</a></li>
+        </ul>
+        <div class="nav-hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- POST HERO -->
+  <section class="post-hero">
+    <div class="post-hero-grid"></div>
+    <div class="post-hero-glow"></div>
+    <div class="container">
+      <div class="post-hero-content">
+        <div class="breadcrumb">
+          <a href="/blog/">Blog</a>
+          <span>/</span>
+          <!-- UPDATE: change category label -->
+          <span>Exam Technique</span>
+        </div>
+        <div class="post-meta-hero">
+          <!-- UPDATE: change category, date, read time -->
+          <span class="post-cat-badge">Exam Technique</span>
+          <span class="post-date-hero">06/05/2026</span>
+          <span class="post-read-time-hero">6 min read</span>
+        </div>
+        <!-- UPDATE: post title -->
+        <h1>The Law of Diminishing Returns<br><em>OR</em><br>How Examiners Think about GCSEs</h1>
+        <!-- UPDATE: post subtitle/intro -->
+        <p class="post-hero-sub">Understanding how examiners assess your work can help you maximise your marks. Here's how the Law of Diminishing Returns applies to GCSE exams.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ARTICLE -->
+  <section class="article-layout">
+    <div class="container">
+      <div class="article-grid">
+
+        <!-- ARTICLE BODY -->
+        <article class="article-body">
+
+          <!-- UPDATE: replace all content below with your actual post -->
+
+          <p><i>I have used AQA as my focus in this blog post, but the same can be said about more or less all the examination boards.</i></p>
+
+          <p>A comment I regularly give to students is that their first paragraph needs to be the best one. This is because of a “law of diminishing returns”. Now, the actual, real, law of diminishing returns has nothing to do with English GCSE and instead is a standard economic theory on reduced output when input is increased in certain conditions. For English GCSE students, it simply means that your first paragraph is likely to be looked at with more precision than the rest of your paragraphs. It also helps as it makes an impression on the examiner and essentially says, “This student knows what she is talking about”.</p>
+
+          <!-- H2 SECTION HEADING -->
+          <h2 id="section-one">Why?</h2>
+
+          <p>It’s important, here, to ask why the law of diminishing returns can apply to exams.</p>
+
+          <p>At first, it seems fairly obvious. The examiner is a human being and, therefore, the examiner will be more refreshed and alert in the first paragraph of a 3-page essay than at the very end of it. </p>
+
+          <!-- KEY POINT BOX: use for rules, tips, or exam advice -->
+          <div class="key-point">
+            <div class="key-point-label">Insight</div>
+            <p>Teachers should guide students towards understanding examiners. Increasingly, teachers are led by information that is difficult to verify. Teachers that become examiners are regularly surprised by the requiremenst of the GCSE - both in terms of things that award marks and things that do not deserve maarks. The goal of the GCSE is to see how well students can phrase an argument, not whether or not they have included a semi-colon in their analysis.</p>
+          </div>
+
+          <h3 id="section-one-a">Is this Right?</h3>
+
+          <p>But, if we think about it, is this right?</p>
+
+          <p>Ultimately, no. AQA make it quite clear that the exam is not about making a good first paragraph and letting the quality tail off. Indeed, the exam is not about making a good paragraph at all. It is about a student’s ability to use evidence from a text to build a clear, coherent argument. A paragraph is just the way that, historically, an argument has been presented. A student could use bullet-points to make an argument and AQA should more-or-less give the same marks, so long as the bullet-points were clear and showed an interesting way of thinking.</p>
+
+
+          <p>What this underlines is something that is really important for GCSE students to understand. The test is not marked by a robot. AQA have policies, guidance and do really try their best to enforce a fair assessment of student work at a GCSE level, but human beings will lose interest in what students write. Especially as markers are given the same question again and again and answers will largely be quite similar to each other.</p>
+
+
+          <p>The law of diminishing returns highlights an inherent unfairness that students and teachers often overlook: human error accounts for all problems with the GCSE.</p>
+
+          <h2 id="section-three">How is Unfairness Addressed?</h2>
+
+          <p>There are ways in which this feels particularly unfair to students. I have seen many examples of students who receive a grade lower to the one that they thought they should receive. They are confused because they have done everything that they thought they were meant to do, and yet the grade has come through as lower than anticipated. They may have “zoomed in” to a key word, or “included the author’s name in the point”, but only received a Grade 4 or 5 for their work. </p>
+
+          <p>This is because English is, in my mind, both an extremely complicated subject and a subject that is very simple. Teachers across the country employ strategies and routinely enforce these rules into their work. “If you don’t include structure, you won’t get a top grade”. For the purpose of a lesson, this can be useful for students and can ensure that they do include structure in their work. </p>
+
+          <div class="key-point">
+            <div class="key-point-label">Examiner's Note</div>
+            <p>"One trend that has been noted is the use of vocabulary which is not fully understood. Perhaps the most
+frequent example of this in 2024 was Lady Macbeth being described as a proto-feminist or as a femme
+fatale without demonstrating understanding of these concepts." - Examiner's Report, Literature Paper 1, 2024</p>
+          </div>
+
+          <h2 id="section-four">Teaching</h2>
+
+          <p>I do wonder, however, if it is a conscious effort to improve the quality of argumentation within student work, or whether it is a more unconscious repetition of advice that floats about within education spheres: paragraphs that include structure get more marks. </p>
+
+          <p>This blog is becoming a bit targeted, but I am trying to establish with clarity that there are significant differences in the way that teachers, students and examiners view the subject. To my mind, it is critical to understand the way that examiners look at the subject – not only the way that AQA wishes examiners viewed the subject, but the actual process and routine faults that are made in that process. This is important to understand because it is also helpful for students to have an insight too. It is helpful for students to know that examiners will not be marking their whole paper one question after another, for instance. With that in mind, a lot of students can rest assured knowing that a slip up on one question doesn’t determine the reputation of the student in the next question. Without that in mind, students can feel as though it is easier to give up.</p>
+
+          <p>To turn this blog into a little bit of an advertisement, my tuition focuses on being the translator between student and exam and encourages good quality writing and creation of arguments, not just spotting techniques. </p>
+
+          <!-- POST FOOTER: tags + author card -->
+          <div class="post-footer">
+            <div class="post-footer-label">Tagged</div>
+            <!-- UPDATE: change tags to match the post -->
+            <div class="post-tags">
+              <span class="post-tag">AQA English Language</span>
+              <span class="post-tag">AQA English Literature</span>
+              <span class="post-tag">Paper 1</span>
+              <span class="post-tag">Exam Technique</span>
+              <span class="post-tag">Tuition</span>
+            </div>
+
+            <div class="author-card">
+              <div class="author-avatar">BD</div>
+              <div class="author-info">
+                <div class="author-name">Ben Duncan</div>
+                <p class="author-bio">MA English Literature · QTS Certified · Enhanced DBS · Specialist GCSE and A-Level English tutor with 5+ years experience across AQA, Edexcel, and OCR.</p>
+                <a href="/#contact" class="author-cta">Book a Session</a>
+              </div>
+            </div>
+          </div>
+
+        </article>
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+
+          <!-- Table of Contents -->
+          <div class="sidebar-block">
+            <div class="sidebar-heading">In This Post</div>
+            <!-- UPDATE: match IDs to your h2/h3 headings -->
+            <ul class="toc-list" id="tocList">
+              <li class="toc-item" data-target="section-one"><a href="#section-one">Why</a></li>
+              <li class="toc-item h3" data-target="section-one-a"><a href="#section-one-a">Is This Right?</a></li>
+              <li class="toc-item" data-target="section-three"><a href="#section-three">How is Unfairness Addressed?</a></li>
+              <li class="toc-item" data-target="section-four"><a href="#section-four">Teaching</a></li>
+            </ul>
+          </div>
+
+          <!-- Book a session -->
+          <div class="sidebar-block">
+            <div class="sidebar-heading">Need Help?</div>
+            <div class="sidebar-about">
+              <p>One-to-one sessions tailored to your exact paper, mark scheme, and gaps. Results-focused from session one.</p>
+              <a href="/#contact" class="btn-sidebar">Book a Session</a>
+            </div>
+          </div>
+
+          <!-- Related posts -->
+          <div class="sidebar-block">
+            <div class="sidebar-heading">Related Posts</div>
+            <!-- UPDATE: swap these for genuinely related posts -->
+            <div class="related-list">
+              <a class="related-item" href="/blog/posts/what-examiners-are-looking-for.html">
+                <div class="related-item-cat">What Examiners Are Looking For</div>
+                <div class="related-item-title">What examiners actually want from analysis</div>
+              </a> 
+            </div>
+          </div>
+
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">Duncan<span>Tuition</span></div>
+        <ul class="footer-links">
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#subjects">Subjects</a></li>
+          <li><a href="/#pricing">Pricing</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+        <div class="footer-copy">&copy; 2026 DuncanTuition</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // CURSOR
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx+'px'; dot.style.top = my+'px'; });
+    (function lerp() {
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx+'px'; ring.style.top = ry+'px';
+      requestAnimationFrame(lerp);
+    })();
+
+    // STARFIELD
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    function initStars() {
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+      stars = Array.from({length: 120}, () => ({
+        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+        r: Math.random() * 1.2, o: Math.random() * 0.6 + 0.1,
+        s: Math.random() * 0.3 + 0.05
+      }));
+    }
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        s.o += Math.sin(Date.now() * s.s * 0.001) * 0.005;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,168,255,${Math.max(0,Math.min(1,s.o))})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+    initStars(); drawStars();
+    window.addEventListener('resize', initStars);
+
+    // READING PROGRESS BAR
+    const fill = document.getElementById('progressFill');
+    window.addEventListener('scroll', () => {
+      const doc = document.documentElement;
+      const scrolled = doc.scrollTop;
+      const total = doc.scrollHeight - doc.clientHeight;
+      fill.style.width = (scrolled / total * 100) + '%';
+    });
+
+    // TABLE OF CONTENTS — highlight active section
+    const tocItems = document.querySelectorAll('.toc-item[data-target]');
+    const sections = [...tocItems].map(i => document.getElementById(i.dataset.target)).filter(Boolean);
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+      tocItems.forEach(i => i.classList.toggle('active', i.dataset.target === current));
+    });
+  </script>
+</body>
+</html>
