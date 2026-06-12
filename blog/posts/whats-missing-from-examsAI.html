@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>What is Missing from English Exams?</title>
+  <meta name="description" content="An opinion piece on what's missing from English exams."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,100;0,300;0,400;0,600;0,700;0,900;1,300&family=Barlow+Condensed:wght@300;400;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --black:   #020408;
+      --void:    #050a10;
+      --panel:   #0a1220;
+      --edge:    #0f1e30;
+      --blue:    #00a8ff;
+      --blue-dim:#0070bb;
+      --white:   #f0f4f8;
+      --mid:     #4a6070;
+      --dim:     #1e2e3e;
+      --serif:   'Barlow Condensed', sans-serif;
+      --body:    'Barlow', sans-serif;
+      --radius:  4px;
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      body { cursor: default !important; }
+      #cursorDot, #cursorRing { display: none !important; }
+    }
+
+    body {
+      font-family: var(--body);
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    .cursor-dot {
+      width: 6px; height: 6px; background: var(--blue);
+      border-radius: 50%; position: fixed; pointer-events: none;
+      z-index: 9999; box-shadow: 0 0 10px var(--blue);
+      transform: translate(-50%,-50%);
+    }
+    .cursor-ring {
+      width: 32px; height: 32px; border: 1px solid rgba(0,168,255,0.4);
+      border-radius: 50%; position: fixed; pointer-events: none;
+      z-index: 9998; transition: width 0.2s, height 0.2s, border-color 0.2s;
+      transform: translate(-50%,-50%);
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--void); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); }
+
+    #starfield { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.7; }
+
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.05) 2px,rgba(0,0,0,0.05) 4px);
+    }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 40px; }
+    a { color: inherit; text-decoration: none; }
+
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      background: rgba(2,4,8,0.88); backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(0,168,255,0.08);
+    }
+    .nav-inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .nav-logo { font-family: var(--serif); font-size: 1.4rem; font-weight: 900; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-logo span { color: var(--blue); }
+    .nav-links { display: flex; align-items: center; gap: 36px; list-style: none; }
+    .nav-links a { font-family: var(--serif); font-size: 0.8rem; font-weight: 400; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); transition: color 0.2s; display: inline-block; padding: 8px 4px; }
+    .nav-links a:hover, .nav-links a.active { color: var(--blue); }
+    .nav-cta-btn { border: 1px solid var(--blue) !important; color: var(--blue) !important; padding: 9px 20px; border-radius: 2px; transition: background 0.2s, color 0.2s !important; }
+    .nav-cta-btn:hover { background: var(--blue) !important; color: var(--black) !important; }
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--white); }
+
+    .post-hero {
+      position: relative; z-index: 2;
+      padding: 140px 0 64px;
+      background: var(--void);
+      overflow: hidden;
+    }
+    .post-hero-grid {
+      position: absolute; inset: 0;
+      background-image: linear-gradient(rgba(0,168,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,168,255,0.03) 1px,transparent 1px);
+      background-size: 80px 80px;
+    }
+    .post-hero-glow {
+      position: absolute; width: 500px; height: 500px; top: -80px; right: -60px;
+      background: radial-gradient(circle,rgba(0,168,255,0.07) 0%,transparent 65%);
+      pointer-events: none;
+    }
+    .post-hero-content { position: relative; z-index: 3; max-width: 780px; }
+
+    .breadcrumb {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--serif); font-size: 10px;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 24px;
+    }
+    .breadcrumb a { color: var(--blue); transition: opacity 0.2s; }
+    .breadcrumb a:hover { opacity: 0.7; }
+    .breadcrumb span { color: var(--dim); }
+
+    .post-meta-hero {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 20px;
+    }
+    .post-cat-badge {
+      font-family: var(--serif); font-size: 9px; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--blue); border: 1px solid var(--blue-dim);
+      padding: 3px 9px; border-radius: 2px;
+      background: rgba(0,168,255,0.05);
+    }
+    .post-date-hero { font-size: 11px; letter-spacing: 0.1em; color: var(--mid); text-transform: uppercase; }
+    .post-read-time-hero { font-size: 11px; letter-spacing: 0.08em; color: var(--mid); }
+
+    .post-hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      font-weight: 900; text-transform: uppercase;
+      letter-spacing: -0.01em; line-height: 1;
+      margin-bottom: 20px;
+    }
+    .post-hero h1 em { font-style: italic; color: var(--blue); font-weight: 300; }
+    .post-hero-sub {
+      font-size: 1rem; font-weight: 300; color: var(--mid);
+      line-height: 1.75; max-width: 600px;
+    }
+
+    .progress-bar {
+      position: fixed; top: 64px; left: 0; right: 0; z-index: 499;
+      height: 2px; background: var(--dim);
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--blue), var(--blue-dim));
+      transition: width 0.1s linear;
+    }
+
+    .article-layout {
+      position: relative; z-index: 2;
+      padding: 64px 0 120px;
+      background: var(--black);
+    }
+    .article-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 56px;
+      align-items: start;
+    }
+
+    .article-body { min-width: 0; }
+
+    .article-body p {
+      font-size: 1rem; font-weight: 300;
+      color: rgba(240,244,248,0.65); line-height: 1.9;
+      margin-bottom: 24px;
+    }
+    .article-body h2 {
+      font-family: var(--serif); font-size: 2rem; font-weight: 900;
+      text-transform: uppercase; letter-spacing: 0.01em;
+      color: var(--white); margin: 48px 0 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--dim);
+    }
+    .article-body h3 {
+      font-family: var(--serif); font-size: 1.3rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.04em;
+      color: var(--white); margin: 32px 0 12px;
+    }
+    .article-body strong { color: var(--white); font-weight: 600; }
+    .article-body em { color: var(--blue); font-style: italic; }
+    .article-body ul, .article-body ol {
+      margin: 0 0 24px 0; padding: 0;
+      list-style: none; display: flex; flex-direction: column; gap: 10px;
+    }
+    .article-body ul li, .article-body ol li {
+      font-size: 0.95rem; font-weight: 300;
+      color: rgba(240,244,248,0.65); line-height: 1.75;
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .article-body ul li::before {
+      content: '—'; color: var(--blue-dim);
+      font-size: 0.75rem; margin-top: 4px; flex-shrink: 0;
+    }
+
+    .pullquote {
+      border-left: 2px solid var(--blue);
+      margin: 40px 0; padding: 20px 28px;
+      background: var(--panel);
+      border-radius: 0 var(--radius) var(--radius) 0;
+    }
+    .pullquote p {
+      font-family: var(--serif); font-size: 1.4rem; font-weight: 300;
+      font-style: italic; color: var(--white) !important;
+      line-height: 1.5; margin: 0 !important;
+    }
+
+    .key-point {
+      background: var(--panel); border: 1px solid var(--blue-dim);
+      border-radius: var(--radius); padding: 24px 28px;
+      margin: 32px 0; position: relative; overflow: hidden;
+    }
+    .key-point::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 2px; background: linear-gradient(90deg, var(--blue), transparent);
+    }
+    .key-point-label {
+      font-family: var(--serif); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 10px;
+    }
+    .key-point p {
+      font-size: 0.9rem !important; color: rgba(240,244,248,0.7) !important;
+      margin: 0 !important;
+    }
+
+    .post-footer {
+      margin-top: 64px; padding-top: 40px;
+      border-top: 1px solid var(--dim);
+    }
+    .post-footer-label {
+      font-family: var(--serif); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--mid); margin-bottom: 20px;
+    }
+    .post-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 40px; }
+    .post-tag {
+      font-family: var(--serif); font-size: 9px; font-weight: 600;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--mid); border: 1px solid var(--dim);
+      padding: 5px 12px; border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s; cursor: pointer;
+    }
+    .post-tag:hover { border-color: var(--blue-dim); color: var(--blue); }
+
+    .author-card {
+      display: flex; align-items: flex-start; gap: 20px;
+      background: var(--panel); border: 1px solid var(--dim);
+      border-radius: var(--radius); padding: 28px;
+      position: relative; overflow: hidden;
+    }
+    .author-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 1px; background: linear-gradient(90deg, var(--blue), transparent);
+    }
+    .author-avatar {
+      width: 52px; height: 52px; border-radius: 2px;
+      background: var(--edge); border: 1px solid var(--blue-dim);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 1.2rem; font-weight: 900;
+      color: var(--blue); flex-shrink: 0;
+    }
+    .author-info { flex: 1; }
+    .author-name {
+      font-family: var(--serif); font-size: 1rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      color: var(--white); margin-bottom: 6px;
+    }
+    .author-bio {
+      font-size: 0.85rem; font-weight: 300;
+      color: rgba(240,244,248,0.5); line-height: 1.7;
+      margin-bottom: 12px;
+    }
+    .author-cta {
+      font-family: var(--serif); font-size: 9px; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--black); background: var(--blue);
+      padding: 7px 16px; border-radius: 2px; display: inline-block;
+      transition: box-shadow 0.2s;
+    }
+    .author-cta:hover { box-shadow: 0 0 20px rgba(0,168,255,0.4); }
+
+    .sidebar { position: sticky; top: 88px; }
+
+    .sidebar-block {
+      background: var(--panel); border: 1px solid var(--dim);
+      border-radius: var(--radius); padding: 28px; margin-bottom: 16px;
+      position: relative; overflow: hidden;
+    }
+    .sidebar-block::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0;
+      height: 1px; background: linear-gradient(90deg, var(--blue), transparent);
+    }
+    .sidebar-heading {
+      font-family: var(--serif); font-size: 10px; font-weight: 700;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .sidebar-heading::after { content: ''; flex: 1; height: 1px; background: var(--dim); }
+
+    .toc-list { display: flex; flex-direction: column; gap: 4px; list-style: none; }
+    .toc-item a {
+      display: block; padding: 8px 10px;
+      font-size: 0.82rem; font-weight: 300;
+      color: rgba(240,244,248,0.5); line-height: 1.4;
+      border-left: 1px solid var(--dim);
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .toc-item a:hover, .toc-item.active a { color: var(--blue); border-left-color: var(--blue); }
+
+    .sidebar-about p {
+      font-size: 0.875rem; font-weight: 300;
+      color: rgba(240,244,248,0.5); line-height: 1.75;
+      margin-bottom: 20px;
+    }
+    .btn-sidebar {
+      width: 100%; font-family: var(--serif); font-size: 0.75rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      background: var(--blue); color: var(--black); font-weight: 700;
+      padding: 13px; border: none; border-radius: 2px; cursor: pointer;
+      transition: box-shadow 0.2s; box-shadow: 0 0 20px rgba(0,168,255,0.25);
+      display: block; text-align: center;
+    }
+    .btn-sidebar:hover { box-shadow: 0 0 36px rgba(0,168,255,0.5); }
+
+    .related-list { display: flex; flex-direction: column; gap: 0; }
+    .related-item {
+      padding: 12px 0; border-bottom: 1px solid var(--dim);
+      cursor: pointer; display: block;
+    }
+    .related-item:last-child { border-bottom: none; padding-bottom: 0; }
+    .related-item-cat {
+      font-family: var(--serif); font-size: 9px; font-weight: 600;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 4px;
+    }
+    .related-item-title {
+      font-size: 0.82rem; font-weight: 400;
+      color: rgba(240,244,248,0.55); line-height: 1.4;
+      transition: color 0.2s;
+    }
+    .related-item:hover .related-item-title { color: var(--blue); }
+
+    footer {
+      position: relative; z-index: 2;
+      background: var(--void); border-top: 1px solid rgba(0,168,255,0.07);
+      padding: 48px 0 32px;
+    }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; }
+    .footer-logo { font-family: var(--serif); font-size: 1.2rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
+    .footer-logo span { color: var(--blue); }
+    .footer-links { display: flex; gap: 28px; list-style: none; }
+    .footer-links a { font-family: var(--serif); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mid); transition: color 0.2s; }
+    .footer-links a:hover { color: var(--blue); }
+    .footer-copy { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
+
+    @media (max-width: 768px) {
+      .container { padding: 0 20px; }
+      .nav-links { display: none; flex-direction: column; position: absolute; top: 64px; left: 0; right: 0; background: rgba(2,4,8,0.97); padding: 24px 40px; gap: 20px; border-bottom: 1px solid var(--dim); }
+      .nav-links.open { display: flex; }
+      .nav-hamburger { display: flex; }
+      .article-grid { grid-template-columns: 1fr; }
+      .sidebar { position: static; margin-top: 40px; }
+      .author-card { flex-direction: column; }
+      .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+      .footer-links { flex-wrap: wrap; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <canvas id="starfield"></canvas>
+
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+  <nav>
+    <div class="container">
+      <div class="nav-inner">
+        <a href="/" class="nav-logo">Duncan<span>Tuition</span></a>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#subjects">Subjects</a></li>
+          <li><a href="/#pricing">Pricing</a></li>
+          <li><a href="/blog/" class="active">Blog</a></li>
+          <li><a href="/#contact" class="nav-cta-btn">Book Now</a></li>
+        </ul>
+        <div class="nav-hamburger" onclick="document.getElementById('navLinks').classList.toggle('open')">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <section class="post-hero">
+    <div class="post-hero-grid"></div>
+    <div class="post-hero-glow"></div>
+    <div class="container">
+      <div class="post-hero-content">
+        <div class="breadcrumb">
+          <a href="/blog/">Blog</a>
+          <span>/</span>
+          <span>Opinion</span>
+        </div>
+        <div class="post-meta-hero">
+          <span class="post-cat-badge">Opinion</span>
+          <span class="post-date-hero">12 June 2026</span>
+          <span class="post-read-time-hero">7 min read</span>
+        </div>
+        <h1>What is<br><em>Missing</em><br>from English Exams?</h1>
+        <p class="post-hero-sub">Having marked hundreds of papers, I have some thoughts — on why English feels hard, why it isn't, and how the system could be better.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="article-layout">
+    <div class="container">
+      <div class="article-grid">
+
+        <article class="article-body">
+
+          <p>Having marked hundreds of papers, I have a lot of experience with the English GCSE and A-Level exam criteria and, I have to say, it is interesting.</p>
+
+          <p>More interesting is the divide that is created between myself and students when I say that English is "one of the easiest exams". It seems as though, just because I am an English teacher, I have a clearer understanding of the exam and therefore I find it easier. But, really, I don't see it that way. So, I want to use this post to draw together some things that I have been thinking for a while:</p>
+
+          <ul>
+            <li>Why English is seen as difficult</li>
+            <li>How English is actually quite easy</li>
+            <li>Ways in which English exams could be improved, nationally</li>
+          </ul>
+
+          <h2 id="section-difficult">Why English is seen as difficult</h2>
+
+          <p>English as a subject is difficult for the same reason that Shakespeare is difficult: it appears to use a completely new syntax to the one that students are used to using. Students are used to speaking their mind. Pedagogical drives incentivise the encouragement of student voice within a classroom, and this, again, pushes for teachers to encourage students to speak in their own voice. The logic behind this technique is that if students are comfortable, they will be able to think freely and produce an idea that is of good quality. This is a practice that I agree with — however, there is also a problem: both exam boards and teachers have a natural inclination towards good ideas that are expressed using the syntax of good English.</p>
+
+          <p>The divide between how students actually speak against the expectations of the subject is what causes the difficulty. Indeed, there are further expectations on students: they are expected to be able to homogenise and use heuristics in the way that examiners are used to in order to be successful. For example, if I read that a character is standing next to a large tree — and in the text the largeness of the tree is mentioned — I can infer that there is a power dynamic being hinted at and that, in turn, nature has power over mankind.</p>
+
+          <p>For many students, this kind of derealisation of the image is quite hard to do. Or, at least, it isn't a natural response to reading a piece of text.</p>
+
+          <div class="pullquote">
+            <p>"English demands a way of expressing and a way of thinking that is actually very different to the way that students already think."</p>
+          </div>
+
+          <p>If you've ever tried to learn a foreign language before, this is the exact issue that students run into. The idea might be there, but it is then a case of wrapping that idea in the kind of language that the exam board want. For example, "the mountain is tall and scary" for a student will essentially imply what another student might write — i.e. "the mountain imposes itself on the landscape and its visibility from every angle carries with it a sense of being watched no matter where you are". One is trained and the other is not.</p>
+
+          <h2 id="section-easy">How English is actually quite easy</h2>
+
+          <p>English may come across as tough for students at first, but there is a rhythm to it. It's just a case of making enough mistakes until you land on something that works well and then doing, improving and learning until you can — with your eyes closed — improvise to any tune.</p>
+
+          <p>Evidence that this is the way that students learn best comes from the kind of techniques that teachers tell their students: Use PETAL, embed quotes, and so on. These are all techniques that successful students use. But, just like in jazz improvisation, you can learn a great melody in C Major, but if you don't know how to transpose that melody on to G Minor, there are going to be problems.</p>
+
+          <div class="key-point">
+            <div class="key-point-label">Key Point</div>
+            <p>In my teaching, I highlight how important "instinct" is. If a paragraph is bad, you should have a <em>feeling</em> that it is bad before you can specifically mention which parts need changing. A piece of music is the same: you know whether you like it or not before you can specify exactly which mixing techniques you disagree with.</p>
+          </div>
+
+          <p>A successful teacher will help to guide a student towards translating the ideas around the text into the language of the exam board. This will be repeated enough times so that good paragraphs become a simple framework that students can use to firstly express their ideas and then, afterwards, explore their ideas.</p>
+
+          <h2 id="section-improve">Ways in which English exams could be improved, nationally</h2>
+
+          <p>Here is where things get technical.</p>
+
+          <p>Exams are important. Before ChatGPT released its first LLM to the world, I had written a first draft of a (small) book encouraging the exam boards to become digital and make use of the internet. AI has fundamentally altered how writing tasks are solved by students and, as far as I'm concerned, written exams are the best way to ensure a fair result for all students.</p>
+
+          <p>One big problem with exams is context. Students are genuinely marked for including contextual information around the events they are describing — and the reason for this is that the exam boards are based on the tenets of <strong>New Historicism</strong>.</p>
+
+          <p>New Historicism encourages analytical reading to take place through the lens of the historical moment in which a text was written. This sounds kind of obvious: a Shakespeare play doesn't include mobile phones because of the time it was written.</p>
+
+          <p>The difficulty with holding New Historicism as the bastion of light for English is that it encourages very unusual pieces of analysis and, as far as I'm concerned, is a huge part of the reason that students are discouraged from reading in general.</p>
+
+          <div class="pullquote">
+            <p>"New Historicism gives the impression that there is something to 'get' in literature."</p>
+          </div>
+
+          <p>Priestley's writing (though obviously heavily political) is championed because there is a piece of political philosophy that makes it make sense; Shakespeare's writing is useful because it highlights the Great Chain of Being.</p>
+
+          <p>I know context isn't marked equally between the exam boards and that it isn't just about historical context — it can also be genre, situational, relationships. But I am not convinced that examiners are actually aware of that. I know that teachers across the country would feel that an essay about Macbeth that doesn't include the word "Jacobean" is a prime example of a student that missed out marks.</p>
+
+          <p>Students that struggle in English often try to link the text to their own personal experience: this character was scared and that is similar to a feeling of being scared that I experienced. This kind of response is smirked at by teachers because it doesn't fit the style that the exam wants. But, in the same breath, these teachers will praise a Picasso or a Van Gogh for its depiction of the individual.</p>
+
+          <div class="key-point">
+            <div class="key-point-label">The Bigger Picture</div>
+            <p>For me, English needs to have more leeway. Exam boards are trying to provide this — allowing AO1 and AO2 as the highest weighting in literature exams, for instance, is meant to do exactly that. However, there is a culture in teaching English that equates high-level thinking to an ability to provide paralleled concepts in places where, let's be honest, they don't belong.</p>
+          </div>
+
+          <p>Knowing this is important for students because it is necessary not to see the exam as an objective piece, where it knows best and you don't. Instead, the exam is an opportunity to explore ideas in a way that is impressive to an examiner.</p>
+
+          <div class="post-footer">
+            <div class="post-footer-label">Tagged</div>
+            <div class="post-tags">
+              <span class="post-tag">Opinion</span>
+              <span class="post-tag">GCSE English</span>
+              <span class="post-tag">Exam Boards</span>
+              <span class="post-tag">New Historicism</span>
+              <span class="post-tag">A Level English</span>
+            </div>
+
+            <div class="author-card">
+              <div class="author-avatar">BD</div>
+              <div class="author-info">
+                <div class="author-name">Ben Duncan</div>
+                <p class="author-bio">MA English Literature · QTS Certified · Enhanced DBS · Specialist GCSE and A-Level English tutor with 5+ years experience across AQA, Edexcel, and OCR.</p>
+                <a href="/#contact" class="author-cta">Book a Session</a>
+              </div>
+            </div>
+          </div>
+
+        </article>
+
+        <aside class="sidebar">
+
+          <div class="sidebar-block">
+            <div class="sidebar-heading">In This Post</div>
+            <ul class="toc-list" id="tocList">
+              <li class="toc-item" data-target="section-difficult"><a href="#section-difficult">Why English is seen as difficult</a></li>
+              <li class="toc-item" data-target="section-easy"><a href="#section-easy">How English is actually quite easy</a></li>
+              <li class="toc-item" data-target="section-improve"><a href="#section-improve">Ways exams could be improved</a></li>
+            </ul>
+          </div>
+
+          <div class="sidebar-block">
+            <div class="sidebar-heading">Need Help?</div>
+            <div class="sidebar-about">
+              <p>One-to-one sessions tailored to your exact paper, mark scheme, and gaps. Results-focused from session one.</p>
+              <a href="/#contact" class="btn-sidebar">Book a Session</a>
+            </div>
+          </div>
+
+          <div class="sidebar-block">
+            <div class="sidebar-heading">Related Posts</div>
+            <div class="related-list">
+              <a class="related-item" href="/blog/posts/what-examiners-want.html">
+                <div class="related-item-cat">AQA Language</div>
+                <div class="related-item-title">What examiners actually want from a language analysis answer</div>
+              </a>
+              <a class="related-item" href="/blog/posts/paper-1-structure.html">
+                <div class="related-item-cat">AQA Language</div>
+                <div class="related-item-title">Paper 1: a question-by-question guide</div>
+              </a>
+              <a class="related-item" href="/blog/posts/timed-writing.html">
+                <div class="related-item-cat">Exam Technique</div>
+                <div class="related-item-title">Why timed writing beats any other revision method</div>
+              </a>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo">Duncan<span>Tuition</span></div>
+        <ul class="footer-links">
+          <li><a href="/#about">About</a></li>
+          <li><a href="/#subjects">Subjects</a></li>
+          <li><a href="/#pricing">Pricing</a></li>
+          <li><a href="/blog/">Blog</a></li>
+          <li><a href="/#contact">Contact</a></li>
+        </ul>
+        <div class="footer-copy">&copy; 2026 DuncanTuition</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const dot = document.getElementById('cursorDot');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; dot.style.left = mx+'px'; dot.style.top = my+'px'; });
+    (function lerp() {
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx+'px'; ring.style.top = ry+'px';
+      requestAnimationFrame(lerp);
+    })();
+
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    function initStars() {
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+      stars = Array.from({length: 120}, () => ({
+        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+        r: Math.random() * 1.2, o: Math.random() * 0.6 + 0.1,
+        s: Math.random() * 0.3 + 0.05
+      }));
+    }
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(s => {
+        s.o += Math.sin(Date.now() * s.s * 0.001) * 0.005;
+        ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,168,255,${Math.max(0,Math.min(1,s.o))})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(drawStars);
+    }
+    initStars(); drawStars();
+    window.addEventListener('resize', initStars);
+
+    const fill = document.getElementById('progressFill');
+    window.addEventListener('scroll', () => {
+      const doc = document.documentElement;
+      fill.style.width = (doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100) + '%';
+    });
+
+    const tocItems = document.querySelectorAll('.toc-item[data-target]');
+    const sections = [...tocItems].map(i => document.getElementById(i.dataset.target)).filter(Boolean);
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+      tocItems.forEach(i => i.classList.toggle('active', i.dataset.target === current));
+    });
+  </script>
+</body>
+</html>
